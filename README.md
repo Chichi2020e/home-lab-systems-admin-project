@@ -1,69 +1,217 @@
-# Linux systems admin home lab
+# home lab sysadmin project
 
-Documentation from the lab I practiced to learn basic Linux administration
-
----
-
-## one   purpose
-
-I built a small Linux lab to get comfortable with  
-* using the terminal  
-* managing users and passwords  
-* installing and updating packages  
-* fixing common errors such as apt locks  
-* documenting my work like a junior systems admin  
+this is the first project in my personal homelab.  
+I wanted to really understand how linux works behind the scenes  
+so I went hands on with user management, permissions, updates, networking, and real troubleshooting.  
+this wasn’t a copy paste lab. I hit real errors, fixed them, and learned how a system behaves when something breaks.
 
 ---
 
-## two   environment
+## what I completed
 
-* virtual machine platform  
-* Linux distribution and version  
-* resources  
-
-example  
-
-* VirtualBox on macOS  
-* Ubuntu desktop 22 dot 04  
-* 4 gigabyte RAM   2 CPU cores   40 gigabyte disk  
+1. checked basic system information and explored the file structure  
+2. updated and upgraded packages  
+3. fixed apt lock errors after interrupting an upgrade  
+4. created a new user and configured sudo access  
+5. worked with permissions and file ownership  
+6. explored networking commands like ip, ping, and hostname  
+7. documented the entire process  
 
 ---
 
-## three   tasks
+## stage one   system information
 
-I completed the following tasks  
+I started by getting comfortable with where I was in the system.
 
-1   checked system info and file structure  
-2   updated and upgraded the system  
-3   created and managed users and groups  
-4   explored file permissions  
-5   handled apt lock errors and learned what caused them  
-6   documented key commands and what they do  
+```
+whoami
+hostnamectl
+uname -a
+pwd
+ls
+```
 
-details for each task are in the next sections  
-
----
-
-## four   commands and steps
-
-I broke the lab into clear stages  
-
-### stage one   basic system info  
-
-### stage two   update and upgrade packages  
-
-### stage three   user and sudo configuration  
-
-### stage four   fixing apt lock issues  
+this helped me confirm I was inside my VM and understand my starting point.
 
 ---
 
-## five   what I learned
+## stage two   update and upgrade
 
-short reflection at the end after I finish all the steps  
+I refreshed the system package list and installed newer versions:
+
+```
+sudo apt update
+sudo apt upgrade
+```
+
+because I interrupted a previous upgrade, I hit **apt lock errors**.  
+linux uses lock files to stop two package processes from running at once.
+
+to fix it:
+
+```
+ps aux | grep apt
+sudo rm /var/lib/dpkg/lock-frontend
+sudo rm /var/cache/apt/archives/lock
+sudo dpkg --configure -a
+```
+
+after re-running update and upgrade, everything worked normally.
+
+I also learned that:
+
+```
+0 upgraded, 0 newly installed, 0 to remove, and 1 not upgraded
+```
+
+isn’t an error. ubuntu sometimes holds back packages if dependencies aren’t ready.
+
+optional cleanup:
+
+```
+sudo apt autoremove
+```
 
 ---
 
-## six   next steps
+## stage three   user and sudo configuration
 
-ideas for what I want to try next in this lab
+I created a new user:
+
+```
+sudo adduser labuser
+```
+
+I got a **BAD PASSWORD** warning because my password was too simple  
+but linux lets you retry as long as you retype correctly.
+
+after filling in optional metadata fields, the system added the user to the default group:
+
+**users**
+
+then I added sudo privileges:
+
+```
+sudo usermod -aG sudo labuser
+```
+
+and switched into the new account:
+
+```
+su - labuser
+whoami
+```
+
+---
+
+## stage four   permissions and ownership
+
+I created a test directory:
+
+```
+mkdir testperm
+cd testperm
+```
+
+inside it, I made a file:
+
+```
+echo "hello world" > file1.txt
+ls -l
+```
+
+then restricted permissions:
+
+```
+chmod 600 file1.txt
+```
+
+this changed permissions to:
+
+```
+-rw-------
+```
+
+meaning:
+
+- owner can read and write  
+- no access for group or others  
+
+I practiced changing ownership:
+
+```
+sudo chown root file1.txt
+sudo chown labuser file1.txt
+```
+
+---
+
+## stage five   networking basics
+
+I checked my network interfaces:
+
+```
+ip a
+```
+
+here I found my IPv4 address:  
+**192.168.1.97**
+
+I tested internet connectivity:
+
+```
+ping -c 4 google.com
+```
+
+`-c 4` sends exactly four pings.
+
+I used a cleaner command to see only my machine’s IP:
+
+```
+hostname -I
+```
+
+uppercase I is important — lowercase i is different.
+
+---
+
+## errors I faced and how I fixed them
+
+### apt lock errors  
+caused by interrupting an upgrade  
+fixed by removing lock files and reconfiguring dpkg
+
+### password warnings  
+too short or mismatched passwords  
+fixed by retrying until accepted
+
+### su not switching  
+happened before proper sudo configuration  
+fixed after using the correct usermod command
+
+### permission confusion  
+got clearer after checking `ls -l` before and after chmod
+
+### trouble reading ip output  
+solved by using `hostname -I` for clean IP listings
+
+---
+
+## what I learned
+
+this project showed me what real system behaviour looks like.  
+I learned how linux protects processes with locks, how permissions actually work,  
+and how to troubleshoot calmly by reading errors and fixing them step by step.
+
+it made me more confident in sysadmin, security, and homelab work.
+
+---
+
+## next steps
+
+- set up SSH access  
+- configure a firewall with ufw  
+- explore systemctl and services  
+- create a multi user environment  
+- expand this project into a full homelab series  
+
