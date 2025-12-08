@@ -3,7 +3,7 @@
 this is the first project in my personal homelab.  
 I wanted to really understand how linux works behind the scenes  
 so I went hands on with user management, permissions, updates, networking, and real troubleshooting.  
-this wasn’t a copy paste lab. I hit real errors, fixed them, and learned how a system behaves when something breaks.
+i didnt copy or paste this lab. I hit real errors, fixed them, and learned how a system behaves when something breaks.
 
 ---
 
@@ -18,22 +18,29 @@ this wasn’t a copy paste lab. I hit real errors, fixed them, and learned how a
 7. documented the entire process  
 
 ---
+### stage one   basic system info
 
-## stage one   system information
+I started by confirming who I was logged in as and what system I was working on.
 
-I started by getting comfortable with where I was in the system.
-
-```
+```bash
 whoami
 hostnamectl
 uname -a
-pwd
-ls
+pwd 
 ```
+This helped me confirm I was inside my VM and understand my starting point.
 
-this helped me confirm I was inside my VM and understand my starting point.
-
----
+Key details from the output:
+```bash
+user:       phantomlab
+hostname:   phantomlab-IdeaPad-1-15IRU7
+os:         Ubuntu 24.04.1 LTS
+kernel:     Linux 6.14.0-33-generic (x86_64)
+hardware:   Lenovo IdeaPad 1 15IRU7 laptop
+firmware:   MCN30WW (2024-10-28)
+home dir:   /home/phantomlab
+```
+This told me I was on my Linux VM with the right user and confirmed the exact Ubuntu and kernel version before making any changes.
 
 ## stage two   update and upgrade
 
@@ -56,7 +63,7 @@ sudo rm /var/cache/apt/archives/lock
 sudo dpkg --configure -a
 ```
 
-after re-running update and upgrade, everything worked normally.
+After re-running update and upgrade, everything worked normally.
 
 I also learned that:
 
